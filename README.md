@@ -13,9 +13,8 @@ When working on a single small part of your app, e.g. `SettingsViewController`, 
 
 ```
 # add the small AppDelegate for this one screen to your project
-# build your project with the new app delegate - it must be successfully built for this to work
-git clone https://github.com/michaeleisel/Barber
-./Barber/barber.rb -t MyTarget -r MyApp/AppDelegate.swift -p MyApp/MyApp.xcodeproj -d ~/.../DerivedData/MyApp-asdf/path/to/swiftdeps/files
+# build your project with the file added - it must be successfully built for this to work
+barber -t MyTarget -r MyApp/AppDelegate.swift -p MyApp/MyApp.xcodeproj -d ~/.../DerivedData/MyApp-asdf/path/to/swiftdeps/files
 # unnecessary files are removed! now you can do your work
 # reset the .pbxproj file when you're done, e.g. `git co head -- MyApp/MyApp.xcodeproj/project.pbxproj`
 ```
