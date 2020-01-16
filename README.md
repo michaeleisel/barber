@@ -1,7 +1,7 @@
 # Barber
 ## Fast build times for big Swift projects
 
-## Details
+## How it works
 
 When working on a single small part of your app, e.g. `SettingsViewController`, you don't want to be compiling the whole app. You only need to work on this screen, after all. To get a fast build time in this situation, you can swap in a small AppDelegate that merely runs this one screen, and then use Barber to strip dependencies that aren't needed by it. When you're done, just revert the project.pbxproj file changes. Note: it only trims Swift dependencies, not Objective-C ones.
 
