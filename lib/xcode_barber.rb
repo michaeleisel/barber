@@ -18,7 +18,7 @@ module XcodeBarber
           o.separator 'other options:'
           # o.bool '-f', '--force', 'Force the project.pbxproj file to be changed without asking first'
           o.on '--help' do
-            puts "Example: ./barber.rb -t MyAppDebug -p MyApp.xcodeproj -r MyApp/AppDelegate.swift -d ~/.../DerivedData/.../MyAppDebug.build/Objects-normal/x86_64/"
+            puts "Example: barber -t MyAppDebug -p MyApp.xcodeproj -r MyApp/AppDelegate.swift -d ~/.../DerivedData/.../MyAppDebug.build/Objects-normal/x86_64/"
             puts o
             exit
           end
