@@ -1,5 +1,5 @@
 # Barber
-## Fast build times in big projects!
+## Fast build times for big Swift projects
 
 ## Details
 
