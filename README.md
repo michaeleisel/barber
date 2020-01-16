@@ -1,40 +1,30 @@
-# XcodeBarber
+# Barber
+## Fast build times in big projects!
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/xcode_barber`. To experiment with that code, run `bin/console` for an interactive prompt.
+## Details
 
-TODO: Delete this and the text above, and describe your gem
-
-## Installation
-
-Add this line to your application's Gemfile:
-
-```ruby
-gem 'xcode_barber'
-```
-
-And then execute:
-
-    $ bundle install
-
-Or install it yourself as:
-
-    $ gem install xcode_barber
+When working on a single small part of your app, e.g. `SettingsViewController`, you don't want to be compiling the whole app. You only need to work on this screen, after all. To get a fast build time in this situation, you can swap in a dummy AppDelegate that merely runs this one screen, and then use Barber to strip dependencies that you don't need. When you're done, just revert the project.pbxproj file changes. Note: it only trims swift dependencies, not Objective-C etc.
 
 ## Usage
 
-TODO: Write usage instructions here
+```
+# remove the real AppDelegate from your compile sources phase
+# add the mock AppDelegate that has fewer dependencies to the compile sources phase
+# build your project with the new app delegate - it must be successfully built for this to work
+git clone https://github.com/michaeleisel/Barber
+./Barber/barber.rb -t MyTarget -r MyApp/AppDelegate.swift -p MyApp/MyApp.xcodeproj -d ~/.../DerivedData/MyApp-asdf/path/to/swiftdeps/files
+# unnecessary files are removed! now you can do your work
+git co head -- MyApp/MyApp.xcodeproj/project.pbxproj # reset the .pbxproj file when you're done
+```
 
-## Development
+## Any issues?
 
-After checking out the repo, run `bin/setup` to install dependencies. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+Computing dependencies is a tricky thing. If it didn't work for you for any reason, feel free to make a short Github issue explaining why, and you can expect a prompt response!
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+## Installation
 
-## Contributing
+The project simply consists of a script, so just `git clone` it.
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/xcode_barber.
+## Author
 
-
-## License
-
-The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+Michael Eisel, michael.eisel@gmail.com

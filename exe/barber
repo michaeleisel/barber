@@ -1,0 +1,7 @@
+#!/usr/bin/env ruby
+
+require_relative '../lib/xcode_barber.rb'
+
+include XcodeBarber
+
+XcodeBarber::run()

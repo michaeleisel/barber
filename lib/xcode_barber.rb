@@ -1,4 +1,4 @@
-require "xcode_barber/version"
+# require "xcode_barber/version"
 require 'set'
 require 'slop'
 require 'xcodeproj'
@@ -6,9 +6,8 @@ require 'xcodeproj'
 module XcodeBarber
   class Error < StandardError; end
 
-  def collect_args()
-    deps_help = 'The path to the directory containing the .swiftdeps files for this project. To find it, go to your build directory (usually either ~/Library/Developer/Xcode/DerivedData or ./Build) and go to the <app name>-<random letters> subdirectory. From there, run `find . -name \'*.swiftdeps\'` and find the directory containing the swiftdeps files for this project. If this is a big pain, feel free to file an issue.'
-    testing = false
+  def collect_args(testing)
+    deps_help = 'The path to the directory containing the .swiftdeps files for this project. To find it, go to your build directory (usually either ~/Library/Developer/Xcode/DerivedData or ./Build) and go to the <app name>-<random letters> subdirectory. From there, run `find . -name \'*.swiftdeps\'` and find the directory containing the swiftdeps files for this target. If this is a big pain, feel free to file an issue.'
     if !testing
       begin
         return Slop.parse do |o|
@@ -19,13 +18,13 @@ module XcodeBarber
           o.separator 'other options:'
           # o.bool '-f', '--force', 'Force the project.pbxproj file to be changed without asking first'
           o.on '--help' do
-            puts "Usage: ./barber.rb -t [target] -p [project] -r [root file, i.e. app delegate] -d [.swiftdeps directory]"
+            puts "Example: ./barber.rb -t MyAppDebug -p MyApp.xcodeproj -r MyApp/AppDelegate.swift -d ~/.../DerivedData/.../MyAppDebug.build/Objects-normal/x86_64/"
             puts o
             exit
           end
         end
       rescue
-        puts "Invalid arguments, try `./barber.rb --help` for usage"
+        puts "Invalid arguments, try `barber --help` for usage"
         exit
       end
     else
@@ -43,7 +42,7 @@ module XcodeBarber
     return str.downcase == "y"
   end
 
-  def confirm_overwrite()
+  def confirm_overwrite(testing, project_path)
     return if testing
     puts "This script will make changes to #{project_path}! Are you sure you want to continue? [y/n]"
     continue = yesno()
@@ -62,13 +61,57 @@ module XcodeBarber
   end
 =end
 
+  def summarize_bottlenecks(fs, file_to_dep, provide_to_file)
+    f_to_idx = fs.each_with_index.to_h
+
+    dep_hash = fs.map do |file, deps|
+      deps = file_to_dep[file]
+      files = deps.flat_map do |dep|
+        provide_to_file[dep]
+      end
+      [f_to_idx[file], files.map { |f| f_to_idx[f] }.uniq.sort - [f_to_idx[file]]]
+    end
+
+    o = Array.new(fs.size) { Array.new(fs.size) { 0 } }
+    dep_hash.each do |i, idxs|
+      idxs.each { |idx| o[i][idx] = 1 }
+    end
+
+    reverse = Hash.new { |h, k| h[k] = [] }
+
+    dep_hash.each do |d, ds|
+      ds.each do |n|
+        reverse[n] << d
+      end
+    end
+
+    n = 10
+    summary = `mktemp /tmp/summary_XXXXXX`.chomp
+    open(summary, "w") do |file|
+      file.puts "Top #{n} with highest ratio dependencies to dependents:"
+      top = dep_hash.map do |d, ds|
+        [d, ds, ds.size.to_f / reverse[d].size]
+      end.sort_by(&:last).reverse.take(n)
+      file.puts top.map(&:first).map { |i| fs[i] }
+      file.puts ""
+
+      file.puts "Same as above, but with heavier weighting towards those with a low total number of dependents:"
+      top = dep_hash.map do |d, ds|
+        [d, ds, ds.size.to_f / (reverse[d].size ** 2)]
+      end.sort_by(&:last).reverse.take(n)
+      file.puts top.map(&:first).map { |i| fs[i] }
+      file.puts ""
+
+      file.puts "Still not finding the key bottlenecks in the dependency graph? Feel free to file an issue."
+    end
+
+    summary
+  end
+
   def trimmed_deps(project_path, swiftdeps_path, root)
     # Dir.chdir(__dir__)
+    raise "--project must be a .xcodeproj" unless project_path.end_with?(".xcodeproj")
 
-    opts = collect_args()
-    raise "--project must be a .xcodeproj" unless opts[:project].end_with?(".xcodeproj")
-
-    project_path = opts[:project] # "/project.pbxproj"
     raise "pbxproj file not found in #{project_path}" unless File.file?("#{project_path}/project.pbxproj")
 
     provide_section = false
@@ -125,51 +168,14 @@ module XcodeBarber
     end
 
     fs_set = fs.to_set
-    f_to_idx = fs.each_with_index.to_h
-
-    dep_hash = fs.map do |file, deps|
-      deps = file_to_dep[file]
-      files = deps.flat_map do |dep|
-        provide_to_file[dep]
-      end
-      [f_to_idx[file], files.map { |f| f_to_idx[f] }.uniq.sort - [f_to_idx[file]]]
-    end
-
-    o = Array.new(fs.size) { Array.new(fs.size) { 0 } }
-    dep_hash.each do |i, idxs|
-      idxs.each { |idx| o[i][idx] = 1 }
-    end
-
-    reverse = Hash.new { |h, k| h[k] = [] }
-
-    dep_hash.each do |d, ds|
-      ds.each do |n|
-        reverse[n] << d
-      end
-    end
-
-    n = 10
-    puts "### Trimming complete ###"
-    puts "Top #{n} with highest ratio dependencies to dependents:"
-    top = dep_hash.map do |d, ds|
-      [d, ds, ds.size.to_f / reverse[d].size]
-    end.sort_by(&:last).reverse.take(n)
-    puts top.map(&:first).map { |i| fs[i] }
-    puts ""
-
-    puts "Same as above, but with heavier weighting towards those with a low total number of dependents:"
-    top = dep_hash.map do |d, ds|
-      [d, ds, ds.size.to_f / (reverse[d].size ** 2)]
-    end.sort_by(&:last).reverse.take(n)
-    puts top.map(&:first).map { |i| fs[i] }
-
-    puts "Still not finding the key bottlenecks in the dependency graph? Feel free to file an issue"
+    summary = summarize_bottlenecks(fs, file_to_dep, provide_to_file)
+    puts "Trimming complete. Potential dependency bottlenecks summarized at #{summary}"
     return fs_set
   end
 
   def rewrite_project(target, project_path, fs_set)
     project = Xcodeproj::Project.open(project_path)
-    target = project.targets.detect { |t| t.name == opts[:target] }
+    target = project.targets.detect { |t| t.name == target }
     raise "Couldn't find target #{target} in #{project_path}. Is it capitalized correctly and all that?" unless target
 
     phase = target.source_build_phase
@@ -186,9 +192,10 @@ module XcodeBarber
   end
 
   def run()
-    opts = collect_args()
-    confirm_overwrite()
+    testing = false
+    opts = collect_args(testing)
     project_path = opts[:project]
+    confirm_overwrite(testing, project_path)
     deps = trimmed_deps(project_path, opts[:deps], opts[:root])
     rewrite_project(opts[:target], project_path, deps)
   end
