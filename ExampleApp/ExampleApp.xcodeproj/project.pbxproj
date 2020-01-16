@@ -26,7 +26,6 @@
 		4CCBE7B223D105C20092890A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		4CCBE7B423D105C20092890A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4CCBE7BA23D105F70092890A /* OtherViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OtherViewController.swift; sourceTree = "<group>"; };
-		4CCBE7BC23D106000092890A /* SingleScreenAppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleScreenAppDelegate.swift; sourceTree = "<group>"; };
 		4CCBE7BE23D107950092890A /* RootModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootModel.swift; sourceTree = "<group>"; };
 		4CCBE7C023D107A80092890A /* OtherModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OtherModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -63,7 +62,6 @@
 			children = (
 				4CCBE7A623D105C10092890A /* AppDelegate.swift */,
 				4CCBE7AA23D105C10092890A /* RootViewController.swift */,
-				4CCBE7BC23D106000092890A /* SingleScreenAppDelegate.swift */,
 				4CCBE7BA23D105F70092890A /* OtherViewController.swift */,
 				4CCBE7AC23D105C10092890A /* Main.storyboard */,
 				4CCBE7AF23D105C20092890A /* Assets.xcassets */,
