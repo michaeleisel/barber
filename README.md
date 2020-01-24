@@ -27,6 +27,10 @@ barber -t MyTarget -r MyApp/AppDelegate.swift -p MyApp/MyApp.xcodeproj -d ~/.../
 
 That's it! The project no longer compiles unnecessary files. That’s it! The project no longer compiles unnecessary files. To reset everything, just discard your `.pbxproj` file changes.
 
+## Example app
+
+You can see a full example in the ExampleApp directory.
+
 ## Any issues?
 
 Computing dependencies is tricky. If it didn't work for you, feel free to create a GitHub issue. You can expect a prompt response!
