@@ -3,7 +3,11 @@
 
 ## How it works
 
-When working on a single small part of your app, e.g. `SettingsViewController`, you don't want to be compiling the whole app. You only need to work on this screen, after all. To get a fast build time in this situation, you can swap in a small AppDelegate that merely runs this one screen, and then use Barber to strip dependencies that aren't needed by it. When you're done, just revert the project.pbxproj file changes. Note: it only trims Swift dependencies, not Objective-C ones.
+Why compile your whole app and run the same steps to navigate to it every time you run when you're just working on a single view controller or a smaller section of your app?
+
+To improve build times, and your productivity in this situation, why not swap in a small AppDelegate that runs a smaller section of your app?  Use Barber to strip your unused dependencies and speed things up.
+
+**Note:** Barber only trims Swift dependencies, not Objective-C ones.
 
 ## Installation
 
@@ -11,17 +15,18 @@ When working on a single small part of your app, e.g. `SettingsViewController`, 
 
 ## Usage
 
-```
-# add the small AppDelegate for this one screen to your project
-# remove the other AppDelegate from the "Compile Sources" build phase, e.g. by unchecking the box for it in "Target Membership" or temporarily removing it from the project altogether.
-# build your project after swapping app delegates - it must be successfully built for this to work
-barber -t MyTarget -r MyApp/AppDelegate.swift -p MyApp/MyApp.xcodeproj -d ~/.../DerivedData/MyApp-asdf/path/to/swiftdeps/files
-# unnecessary files are no longer compiled! now you can do your work on that one screen
-# reset the .pbxproj file when you're done, e.g. `git co head -- MyApp/MyApp.xcodeproj/project.pbxproj`
-```
+1. First, add a new AppDelegate that focuses on a specific view controller or section of your app.
+2. Temporarily prevent the existing AppDelegate from being compiled. The easiest way to achieve this is to select it in the Project Navigator and use the File Inspector to remove it from the Target Membership for the target.
+3. Build the app and ensure that everything is working you expect.
 
-You can see a fully worked out example at ExampleApp/README.md in this repo
+Then, run `barber`. Pass the target name, the project file path, the new AppDelegate path, and the path to the directory that contains the `swiftdeps` files for the project.
+
+````
+barber -t MyTarget -r MyApp/AppDelegate.swift -p MyApp/MyApp.xcodeproj -d ~/.../DerivedData/MyApp-asdf/path/to/swiftdeps/files
+````
+
+That's it! The project no longer compiles unnecessary files. That’s it! The project no longer compiles unnecessary files. To reset everything, just discard your `.pbxproj` file changes.
 
 ## Any issues?
 
-Computing dependencies is a tricky thing. If it didn't work for you for any reason, feel free to make a short Github issue about it, and you can expect a prompt response!
+Computing dependencies is tricky. If it didn't work for you, feel free to create a GitHub issue. You can expect a prompt response!
