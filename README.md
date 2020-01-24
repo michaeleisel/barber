@@ -25,7 +25,7 @@ Then, run `barber`. Pass the target name, the project file path, the new AppDele
 barber -t MyTarget -r MyApp/AppDelegate.swift -p MyApp/MyApp.xcodeproj -d ~/.../DerivedData/MyApp-asdf/path/to/swiftdeps/files
 ````
 
-That's it! The project no longer compiles unnecessary files. That’s it! The project no longer compiles unnecessary files. To reset everything, just discard your `.pbxproj` file changes.
+That’s it! The project no longer compiles unnecessary files. To reset everything, just discard your `.pbxproj` file changes.
 
 ## Example app
 
