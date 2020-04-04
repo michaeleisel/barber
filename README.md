@@ -11,7 +11,7 @@ To improve build times, and your productivity in this situation, why not swap in
 
 ## Installation
 
-`sudo gem install xcode_barber`
+`[sudo] gem install xcode_barber`
 
 ## Usage
 
