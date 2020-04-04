@@ -29,8 +29,8 @@ That’s it! The project no longer compiles unnecessary files. To reset everythi
 
 ## Example app
 
-You can see a full example in the ExampleApp directory.
+You can see a full example in the [ExampleApp directory](https://github.com/michaeleisel/barber/tree/master/ExampleApp)
 
 ## Any issues?
 
-Computing dependencies is tricky. If it didn't work for you, feel free to create a GitHub issue. You can expect a prompt response!
+Computing dependencies is tricky. If it didn't work for you, feel free to create a [GitHub issue](https://github.com/michaeleisel/barber/issues). You can expect a prompt response!
